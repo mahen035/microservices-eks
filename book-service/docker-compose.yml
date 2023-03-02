@@ -1,0 +1,42 @@
+services:
+  mysqldb:
+    image: mysql:latest
+    environment:
+      - MYSQL_DATABASE=infinite
+      - MYSQL_ROOT_PASSWORD=root123
+    ports:
+      - "3306:3306"
+    networks:
+      - demoproject-net
+  eureka-server:
+    image: mahen036/eurekaserver:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - demoproject-net
+  book-service:
+    image: mahen036/book:latest
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8761/eureka"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysqldb
+      - eureka-server 
+    restart: on-failure    
+    networks:
+      - demoproject-net
+  student-service:
+    image: mahen036/student:latest
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8761/eureka"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysqldb
+      - eureka-server 
+    restart: on-failure   
+    networks:
+      - demoproject-net
+networks:
+  demoproject-net:

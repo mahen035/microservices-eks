@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-service
+  labels:
+    app:  book-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  book-service
+  template:
+    metadata:
+      labels:
+        app:  book-service
+    spec:
+      containers:
+        - name: book-service
+          image: mahen036/book
+          command:  ["java"]
+          args: ["-jar","book-service.jar"]
+          ports:
+           - containerPort: 8081
+          env:
+            - name:  DB_HOST
+              value:  172.31.25.87
+            - name: DB_NAME
+              value:  infinite
+            - name: DB_USERNAME
+              value:  root
+            - name:  DB_PASSWORD
+              value:  root123 
+            - name: EUREKA_HOST
+              value:  a7463d07b2ff74edf905698304667802-163861818.us-east-2.elb.amazonaws.com:8761    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-service
+spec:
+  selector:
+    app:  book-service
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+                  
